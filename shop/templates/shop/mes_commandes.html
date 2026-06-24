@@ -34,7 +34,7 @@
           <ul class="mb-0 mt-2">
             {% for item in commande.order_items.all %}
             <li>
-              {{ item.product.title|default:"Produit supprimé" }} x{{ item.quantity }} — {{ item.price }} €
+              {{ item.plat.title|default:"Produit supprimé" }} x{{ item.quantity }} — {{ item.price }} €
             </li>
             {% endfor %}
           </ul>

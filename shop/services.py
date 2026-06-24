@@ -38,10 +38,10 @@ def calculate_tax_totals(subtotal_ht):
 
 
 def build_order_items_payload(commande):
-    order_items = list(commande.order_items.select_related('product').all())
+    order_items = list(commande.order_items.select_related('plat').all())
     return [
         {
-            'title': item.product.title if item.product else 'Produit supprimé',
+            'title': item.plat.title if item.plat else 'Produit supprimé',
             'quantity': item.quantity,
             'price': str(item.price),
             'subtotal': str(item.price * item.quantity),

@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .models import Category, Commande, OrderItem, Product
+from .models import Category, Commande, OrderItem, Plat
 
 
 User = get_user_model()
@@ -15,14 +15,25 @@ def create_category(name="Vetements"):
 	return Category.objects.create(name=name)
 
 
-def create_product(category=None, title="T-shirt", price="29.99", stock=10):
+def create_cuisinier(username="chef"):
+	user, _ = User.objects.get_or_create(
+		username=username,
+		defaults={"email": f"{username}@test.com"},
+	)
+	return user
+
+
+def create_product(category=None, cuisinier=None, title="T-shirt", price="29.99", stock=10):
 	if category is None:
 		category = create_category()
-	return Product.objects.create(
+	if cuisinier is None:
+		cuisinier = create_cuisinier()
+	return Plat.objects.create(
 		title=title,
 		price=Decimal(price),
 		description="Un super produit",
 		category=category,
+		cuisinier=cuisinier,
 		stock=stock,
 	)
 
@@ -31,7 +42,7 @@ def create_user(username="junior", email="junior@test.com", password="motdepasse
 	return User.objects.create_user(username=username, email=email, password=password)
 
 
-class ProductModelTest(TestCase):
+class PlatModelTest(TestCase):
 	def test_str_returns_title(self):
 		product = create_product(title="Nike Air")
 		self.assertEqual(str(product), "Nike Air")

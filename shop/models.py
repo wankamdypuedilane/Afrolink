@@ -14,7 +14,7 @@ class Category(models.Model):
         return self.name
 
 
-class Product(models.Model):
+class Plat(models.Model):
     title       = models.CharField(max_length=200)
     price       = models.DecimalField(max_digits=10, decimal_places=2)  # plus FloatField
     description = models.TextField()
@@ -83,10 +83,10 @@ class Commande(models.Model):
 
 class OrderItem(models.Model):
     commande = models.ForeignKey(Commande, related_name='order_items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    plat = models.ForeignKey(Plat, on_delete=models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
 
     def __str__(self):
-        product_name = self.product.title if self.product else 'Produit supprimé'
+        product_name = self.plat.title if self.plat else 'Produit supprimé'
         return f"{product_name} x{self.quantity}"

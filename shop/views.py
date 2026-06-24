@@ -11,7 +11,7 @@ from .forms import SignupForm, EmailAuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from .models import Product, Category, Commande, OrderItem
+from .models import Plat, Category, Commande, OrderItem
 from .services import (
     sync_commande_payment_from_stripe,
     stripe_is_configured,
@@ -40,7 +40,7 @@ def render_checkout_error(request, error_message):
 
 
 def index(request):
-    product_object = Product.objects.select_related('category').all()
+    product_object = Plat.objects.select_related('category').all()
     categories = Category.objects.all()
 
     item_name = request.GET.get('item-name', '').strip()
@@ -66,7 +66,7 @@ def index(request):
 
 
 def search_products(request):
-    product_object = Product.objects.select_related('category').all()
+    product_object = Plat.objects.select_related('category').all()
     item_name = request.GET.get('item-name', '').strip()
     selected_category = request.GET.get('category', '').strip()
 
@@ -93,7 +93,7 @@ def search_products(request):
 
 
 def detail(request, myid):
-    product_object = Product.objects.get(id=myid)
+    product_object = Plat.objects.get(id=myid)
     return render(request, 'shop/detail.html', {'product': product_object})
 
 @login_required(login_url='/connexion/')
@@ -148,7 +148,7 @@ def checkout(request):
         with transaction.atomic():
             products = {
                 product.id: product
-                for product in Product.objects.select_for_update().filter(id__in=ordered_product_ids)
+                for product in Plat.objects.select_for_update().filter(id__in=ordered_product_ids)
             }
 
             total_calcule = 0
@@ -181,7 +181,7 @@ def checkout(request):
 
                 order_items_to_create.append(
                     OrderItem(
-                        product=product,
+                        plat=product,
                         price=prix_reel,
                         quantity=quantity,
                     )
@@ -296,11 +296,11 @@ def payment_cancel(request):
             update_fields = ['payment_status']
             commande.payment_status = 'cancelled'
             if commande.stock_deducted:
-                order_items = OrderItem.objects.filter(commande=commande).select_related('product')
+                order_items = OrderItem.objects.filter(commande=commande).select_related('plat')
                 for item in order_items:
-                    if item.product:
-                        item.product.stock += item.quantity
-                        item.product.save(update_fields=['stock'])
+                    if item.plat:
+                        item.plat.stock += item.quantity
+                        item.plat.save(update_fields=['stock'])
                 commande.stock_deducted = False
                 update_fields.append('stock_deducted')
             commande.save(update_fields=update_fields)
@@ -347,11 +347,11 @@ def stripe_webhook(request):
                 with transaction.atomic():
                     commande_locked = Commande.objects.select_for_update().filter(id=commande.id).first()
                     if commande_locked and commande_locked.payment_status == 'paid' and not commande_locked.stock_deducted:
-                        order_items = list(OrderItem.objects.filter(commande=commande_locked).select_related('product'))
+                        order_items = list(OrderItem.objects.filter(commande=commande_locked).select_related('plat'))
                         for item in order_items:
-                            if not item.product:
+                            if not item.plat:
                                 continue
-                            product = Product.objects.select_for_update().filter(id=item.product_id).first()
+                            product = Plat.objects.select_for_update().filter(id=item.plat_id).first()
                             if not product:
                                 continue
                             product.stock = max(0, product.stock - item.quantity)
@@ -371,11 +371,11 @@ def stripe_webhook(request):
             update_fields = ['payment_status']
             commande.payment_status = 'cancelled'
             if commande.stock_deducted:
-                order_items = OrderItem.objects.filter(commande=commande).select_related('product')
+                order_items = OrderItem.objects.filter(commande=commande).select_related('plat')
                 for item in order_items:
-                    if item.product:
-                        item.product.stock += item.quantity
-                        item.product.save(update_fields=['stock'])
+                    if item.plat:
+                        item.plat.stock += item.quantity
+                        item.plat.save(update_fields=['stock'])
                 commande.stock_deducted = False
                 update_fields.append('stock_deducted')
             commande.save(update_fields=update_fields)
@@ -417,5 +417,5 @@ def deconnexion(request):
 
 @login_required(login_url='/connexion/')
 def profil(request):
-    commandes = Commande.objects.filter(user=request.user).prefetch_related('order_items__product').order_by('-date_commande')
+    commandes = Commande.objects.filter(user=request.user).prefetch_related('order_items__plat').order_by('-date_commande')
     return render(request, 'shop/mes_commandes.html', {'commandes': commandes})
