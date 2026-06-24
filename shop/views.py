@@ -40,25 +40,25 @@ def render_checkout_error(request, error_message):
 
 
 def index(request):
-    product_object = Plat.objects.select_related('category').all()
+    plats = Plat.objects.select_related('category').all()
     categories = Category.objects.all()
 
     item_name = request.GET.get('item-name', '').strip()
     selected_category = request.GET.get('category', '').strip()
 
     if item_name:
-        product_object = product_object.filter(title__icontains=item_name)
+        plats = plats.filter(title__icontains=item_name)
 
     selected_category_id = None
     if selected_category.isdigit():
         selected_category_id = int(selected_category)
-        product_object = product_object.filter(category_id=selected_category_id)
+        plats = plats.filter(category_id=selected_category_id)
 
-    paginator = Paginator(product_object, 4)
+    paginator = Paginator(plats, 4)
     page = request.GET.get('page')
-    product_object = paginator.get_page(page)
+    plats = paginator.get_page(page)
     return render(request, 'shop/index.html', {
-        'product_object': product_object,
+        'plats': plats,
         'categories': categories,
         'item_name': item_name,
         'selected_category_id': selected_category_id,
@@ -66,17 +66,17 @@ def index(request):
 
 
 def search_products(request):
-    product_object = Plat.objects.select_related('category').all()
+    plats = Plat.objects.select_related('category').all()
     item_name = request.GET.get('item-name', '').strip()
     selected_category = request.GET.get('category', '').strip()
 
     if item_name:
-        product_object = product_object.filter(title__icontains=item_name)
+        plats = plats.filter(title__icontains=item_name)
 
     if selected_category.isdigit():
-        product_object = product_object.filter(category_id=int(selected_category))
+        plats = plats.filter(category_id=int(selected_category))
 
-    product_object = product_object.order_by('title')[:24]
+    plats = plats.order_by('title')[:24]
 
     return JsonResponse({
         'products': [
@@ -87,14 +87,14 @@ def search_products(request):
                 'image': product.display_image_url,
                 'stock': product.stock,
             }
-            for product in product_object
+            for product in plats
         ]
     })
 
 
 def detail(request, myid):
-    product_object = Plat.objects.get(id=myid)
-    return render(request, 'shop/detail.html', {'product': product_object})
+    plat = Plat.objects.get(id=myid)
+    return render(request, 'shop/detail.html', {'product': plat})
 
 @login_required(login_url='/connexion/')
 def checkout(request):

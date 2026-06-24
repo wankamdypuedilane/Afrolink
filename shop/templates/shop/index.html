@@ -35,7 +35,7 @@
 <div id="search-feedback" class="text-muted mt-2"></div>
 
 <div class="row" id="product-grid">
-  {% for product in product_object %}
+  {% for product in plats %}
   <div class="col-md-3">
     <div class="card">
       <img
@@ -93,10 +93,10 @@
 <div class="row mt-3" id="index-pagination">
   <div class="col-md-3 offset-md-4">
     <ul class="pagination">
-      {% if product_object.has_previous %}
+      {% if plats.has_previous %}
       <li class="page-item">
         <a
-          href="?page={{ product_object.previous_page_number }}{% if item_name %}&item-name={{ item_name|urlencode }}{% endif %}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}"
+          href="?page={{ plats.previous_page_number }}{% if item_name %}&item-name={{ item_name|urlencode }}{% endif %}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}"
           class="page-link"
           >Précédent</a
         >
@@ -105,16 +105,16 @@
 
       <li class="page-item active">
         <a
-          href="?page={{ product_object.number }}{% if item_name %}&item-name={{ item_name|urlencode }}{% endif %}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}"
+          href="?page={{ plats.number }}{% if item_name %}&item-name={{ item_name|urlencode }}{% endif %}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}"
           class="page-link"
-          >{{product_object.number}}</a
+          >{{plats.number}}</a
         >
       </li>
 
-      {% if product_object.has_next %}
+      {% if plats.has_next %}
       <li class="page-item">
         <a
-          href="?page={{ product_object.next_page_number }}{% if item_name %}&item-name={{ item_name|urlencode }}{% endif %}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}"
+          href="?page={{ plats.next_page_number }}{% if item_name %}&item-name={{ item_name|urlencode }}{% endif %}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}"
           class="page-link"
           >Suivant</a
         >
