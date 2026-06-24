@@ -12,7 +12,7 @@ class AdminCategorie(admin.ModelAdmin):
 
 
 class AdminProduct(admin.ModelAdmin):
-    list_display  = ('title', 'price', 'category', 'stock')
+    list_display  = ('title', 'price', 'category', 'stock', 'cuisinier')
     search_fields = ('title',)
     list_editable = ('price', 'stock')  
 

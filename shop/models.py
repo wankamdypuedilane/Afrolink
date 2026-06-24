@@ -19,6 +19,7 @@ class Product(models.Model):
     price       = models.DecimalField(max_digits=10, decimal_places=2)  # plus FloatField
     description = models.TextField()
     category    = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    cuisinier   = models.ForeignKey(User, related_name='plats', on_delete=models.CASCADE)
     image       = models.CharField(max_length=5000, blank=True, default='')  # URL legacy
     image_file  = models.ImageField(upload_to='products/', blank=True, null=True)
     stock       = models.PositiveIntegerField(default=0) 
