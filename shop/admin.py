@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Plat, Commande, OrderItem
+from .models import Category, Plat, Commande, OrderItem, Profile
 from django.utils.safestring import mark_safe
 
 admin.site.site_header = "E-commerce"
@@ -50,6 +50,7 @@ AdminCommande.inlines = [OrderItemInline]
 admin.site.register(Plat, AdminPlat)
 admin.site.register(Category, AdminCategorie)
 admin.site.register(Commande, AdminCommande)
+admin.site.register(Profile)
 
 
 @admin.register(OrderItem)

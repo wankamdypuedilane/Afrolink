@@ -11,7 +11,7 @@ from .forms import SignupForm, EmailAuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from .models import Plat, Category, Commande, OrderItem
+from .models import Plat, Category, Commande, OrderItem, Profile
 from .services import (
     sync_commande_payment_from_stripe,
     stripe_is_configured,
@@ -388,6 +388,7 @@ def inscription(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
+            Profile.objects.create(user=user)
             login(request, user)
             messages.success(request, f"Bienvenue {user.username}, votre compte a été créé !")
             return redirect('home')
