@@ -1,4 +1,5 @@
 from django import forms
+from .models import Plat, Category
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
@@ -32,3 +33,16 @@ class SignupForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class PlatForm(forms.ModelForm):
+    class Meta:
+        model = Plat
+        fields = ['title', 'price', 'description', 'category', 'image_file', 'stock']
+        labels = {
+            'title':       'Nom du plat',
+            'price':       'Prix (€)',
+            'description': 'Description',
+            'category':    'Catégorie',
+            'image_file':  'Photo du plat',
+            'stock':       'Nombre de portions disponibles',
+        }

@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth import login, logout
-from .forms import SignupForm, EmailAuthenticationForm
+from .forms import SignupForm, EmailAuthenticationForm, PlatForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
@@ -429,5 +429,15 @@ def ajouter_plat(request):
         messages.error(request, "Seuls les cuisiniers peuvent ajouter un plat.")
         return redirect('home')
 
-    # Si on arrive ici : utilisateur connecté ET cuisinier → les deux barrières sont franchies
-    return HttpResponse("Bravo, tu es un cuisinier connecté. Le formulaire viendra ici.")
+    if request.method == 'POST':
+        form = PlatForm(request.POST, request.FILES)
+        if form.is_valid():
+            plat = form.save(commit=False)
+            plat.cuisinier = request.user
+            plat.save()
+            messages.success(request, f"Le plat « {plat.title} » a été ajouté !")
+            return redirect('home')
+    else:
+        form = PlatForm()
+
+    return render(request, 'shop/ajouter_plat.html', {'form': form})

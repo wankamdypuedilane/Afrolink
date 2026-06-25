@@ -1,0 +1,10 @@
+{% extends "shop/base.html" %} {% block content %}
+<div class="container mt-4">
+  <h2>Ajouter un plat</h2>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Ajouter le plat</button>
+  </form>
+</div>
+{% endblock %}
