@@ -109,57 +109,38 @@
               <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto">
                   <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'home' %}"
-                      >Accueil</a
-                    >
+                    <a class="nav-link active" href="{% url 'home' %}">Accueil</a>
                   </li>
                   <li class="nav-item">
-                    <button
-                      id="panier"
-                      type="button"
-                      class="btn btn-secondary position-relative me-3"
-                    >
+                    <button id="panier" type="button" class="btn btn-secondary position-relative me-3">
                       🛒 Panier
-                      <span
-                        id="panier-count"
-                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                        >0</span
-                      >
+                      <span id="panier-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                     </button>
                   </li>
                   {% if request.user.is_authenticated and request.user.is_staff %}
                   <li class="nav-item">
-                    <a
-                      class="nav-link text-primary"
-                      href="{% url 'admin_shortcut' %}"
-                      >Console Admin</a
-                    >
+                    <a class="nav-link text-primary" href="{% url 'admin_shortcut' %}">Console Admin</a>
                   </li>
                   {% endif %}
                   {% if request.user.is_authenticated %}
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'profil' %}"
-                      >Mes commandes</a
-                    >
+                    <a class="nav-link" href="{% url 'profil' %}">Mes commandes</a>
                   </li>
                   <li class="nav-item">
-                    <a
-                      class="nav-link text-danger"
-                      href="{% url 'deconnexion' %}"
-                      >Déconnexion</a
-                    >
+                    <a class="nav-link text-danger" href="{% url 'deconnexion' %}">Déconnexion</a>
+                  </li>
+                  {% endif %}
+                  {% if request.user.is_authenticated and request.user.profile.role == 'cuisinier' %}
+                  <li class="nav-item">
+                    <a class="nav-link text-success" href="{% url 'ajouter_plat' %}">Ajouter un plat</a>
                   </li>
                   {% endif %}
                   {% if not request.user.is_authenticated %}
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'connexion' %}"
-                      >Connexion</a
-                    >
+                    <a class="nav-link" href="{% url 'connexion' %}">Connexion</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'inscription' %}"
-                      >Inscription</a
-                    >
+                    <a class="nav-link" href="{% url 'inscription' %}">Inscription</a>
                   </li>
                   {% endif %}
                 </ul>
