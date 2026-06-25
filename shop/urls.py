@@ -12,6 +12,7 @@ from shop.views import (
     connexion,
     deconnexion,
     profil,
+    ajouter_plat,
     search_products,
 )
 
@@ -53,4 +54,5 @@ urlpatterns = [
     ),
     path('deconnexion/', deconnexion, name='deconnexion'),
     path('profil/', profil, name='profil'),
+    path('ajouter-plat/', ajouter_plat, name='ajouter_plat'),
 ]

@@ -420,3 +420,14 @@ def deconnexion(request):
 def profil(request):
     commandes = Commande.objects.filter(user=request.user).prefetch_related('order_items__plat').order_by('-date_commande')
     return render(request, 'shop/mes_commandes.html', {'commandes': commandes})
+
+
+@login_required(login_url='/connexion/')
+def ajouter_plat(request):
+    # Barrière 2 : est-ce un cuisinier ?
+    if request.user.profile.role != 'cuisinier':
+        messages.error(request, "Seuls les cuisiniers peuvent ajouter un plat.")
+        return redirect('home')
+
+    # Si on arrive ici : utilisateur connecté ET cuisinier → les deux barrières sont franchies
+    return HttpResponse("Bravo, tu es un cuisinier connecté. Le formulaire viendra ici.")
