@@ -6,7 +6,7 @@
   <p class="text-muted">Bienvenue {{ request.user.username }} ! Gérez vos plats depuis cet espace.</p>
 
   <div class="row mt-4">
-    <div class="col-md-6 mb-3">
+    <div class="col-md-4 mb-3">
       <div class="card h-100">
         <div class="card-body text-center">
           <h5 class="card-title">Mes plats</h5>
@@ -15,12 +15,21 @@
         </div>
       </div>
     </div>
-    <div class="col-md-6 mb-3">
+    <div class="col-md-4 mb-3">
       <div class="card h-100">
         <div class="card-body text-center">
           <h5 class="card-title">Ajouter un plat</h5>
           <p class="card-text">Proposez un nouveau plat à vos clients.</p>
           <a href="{% url 'ajouter_plat' %}" class="btn btn-success">Ajouter un plat</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Commandes reçues</h5>
+          <p class="card-text">Consultez les plats qu'on vous a commandés.</p>
+          <a href="{% url 'commandes_recues' %}" class="btn btn-primary">Voir les commandes</a>
         </div>
       </div>
     </div>

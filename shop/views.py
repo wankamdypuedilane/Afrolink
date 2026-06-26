@@ -506,3 +506,18 @@ def supprimer_plat(request, myid):
 
     # En GET : on affiche une page de confirmation
     return render(request, 'shop/supprimer_plat.html', {'plat': plat})
+
+@login_required(login_url='/connexion/')
+def commandes_recues(request):
+    # Barrière : cuisinier ?
+    if request.user.profile.role != 'cuisinier':
+        messages.error(request, "Cet espace est réservé aux cuisiniers.")
+        return redirect('home')
+
+    # Les lignes de commande : ses plats + commandes payées
+    lignes = OrderItem.objects.filter(
+        plat__cuisinier=request.user,
+        commande__payment_status='paid'
+    ).select_related('plat', 'commande').order_by('-commande__date_commande')
+
+    return render(request, 'shop/commandes_recues.html', {'lignes': lignes})

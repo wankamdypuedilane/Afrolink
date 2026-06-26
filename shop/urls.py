@@ -17,6 +17,7 @@ from shop.views import (
     modifier_plat,
     supprimer_plat,
     espace_cuisinier,
+    commandes_recues,
     search_products,
 )
 
@@ -63,4 +64,5 @@ urlpatterns = [
     path('modifier-plat/<int:myid>/', modifier_plat, name='modifier_plat'),
     path('supprimer-plat/<int:myid>/', supprimer_plat, name='supprimer_plat'),
     path('espace-cuisinier/', espace_cuisinier, name='espace_cuisinier'),
+    path('commandes-recues/', commandes_recues, name='commandes_recues'),
 ]
