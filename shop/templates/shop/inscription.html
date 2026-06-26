@@ -22,6 +22,35 @@
           </div>
 
           <div class="mb-3">
+            <label class="form-label fw-bold">Vous êtes ?</label>
+            <div class="form-check">
+              <input
+                type="radio"
+                name="role"
+                value="client"
+                id="role-client"
+                class="form-check-input"
+                checked
+              />
+              <label class="form-check-label" for="role-client">
+                Je veux commander des plats (client)
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                type="radio"
+                name="role"
+                value="cuisinier"
+                id="role-cuisinier"
+                class="form-check-input"
+              />
+              <label class="form-check-label" for="role-cuisinier">
+                Je veux vendre mes plats (cuisinier)
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-3">
             <label class="form-label fw-bold">Mot de passe</label>
             <div class="password-field">
               <input

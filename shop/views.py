@@ -388,7 +388,8 @@ def inscription(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            Profile.objects.create(user=user)
+            role = form.cleaned_data['role']                    # on récupère le choix
+            Profile.objects.create(user=user, role=role)        # on crée le profil avec ce rôle
             login(request, user)
             messages.success(request, f"Bienvenue {user.username}, votre compte a été créé !")
             return redirect('home')

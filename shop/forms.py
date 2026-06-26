@@ -17,6 +17,17 @@ class EmailAuthenticationForm(AuthenticationForm):
 class SignupForm(UserCreationForm):
     email = forms.EmailField(required=True, label="Email")
 
+    ROLE_CHOICES = [
+        ('client', 'Je veux commander des plats'),
+        ('cuisinier', 'Je veux vendre mes plats'),
+    ]
+    role = forms.ChoiceField(
+        choices=ROLE_CHOICES,
+        widget=forms.RadioSelect,
+        initial='client',
+        label="Vous êtes ?",
+    )
+
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("username", "email")

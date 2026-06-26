@@ -159,6 +159,16 @@
     window.cartStorageKey =
       "{% if request.user.is_authenticated %}panier_user_{{ request.user.id }}{% else %}panier_guest{% endif %}";
   </script>
+  <script>
+    // Fait disparaître automatiquement les messages après 4 secondes
+    setTimeout(function () {
+      document.querySelectorAll(".alert").forEach(function (alert) {
+        // Utilise le système d'alerte Bootstrap pour fermer proprement (avec l'animation de fondu)
+        var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+        bsAlert.close();
+      });
+    }, 4000); // 4000 millisecondes = 4 secondes
+  </script>
   {%block js%} {%endblock%}
   <script type="text/javascript">
     $(document).on("click", ".toggle-password", function () {

@@ -196,6 +196,7 @@ class AuthFlowTest(TestCase):
 				"email": "nouveau@test.com",
 				"password1": "MotDePasse123!",
 				"password2": "MotDePasse123!",
+				"role": "client",
 			},
 			follow=True,
 		)
