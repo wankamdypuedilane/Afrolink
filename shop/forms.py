@@ -46,3 +46,11 @@ class PlatForm(forms.ModelForm):
             'image_file':  'Photo du plat',
             'stock':       'Nombre de portions disponibles',
         }
+        widgets = {
+            'title':       forms.TextInput(attrs={'class': 'form-control'}),
+            'price':       forms.NumberInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'category':    forms.Select(attrs={'class': 'form-select'}),
+            'image_file':  forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'stock':       forms.NumberInput(attrs={'class': 'form-control'}),
+        }

@@ -4,7 +4,7 @@
     {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>App-Ecommerce</title>
+    <title>AfroLink</title>
     <link
       rel="icon"
       type="image/svg+xml"
@@ -17,6 +17,7 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <script
       src="https://code.jquery.com/jquery-4.0.0.js"
       integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
@@ -94,7 +95,9 @@
         <div class="col-md-12">
           <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-              <a class="navbar-brand" href="{% url 'home' %}">Dilane-shop</a>
+              <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <span style="color: #009639;">Afro</span><i class="bi bi-link-45deg" style="color: #FCD116; font-size: 1.3rem;"></i><span style="color: #CE1126;">Link</span>
+              </a>
               <button
                 class="navbar-toggler"
                 type="button"

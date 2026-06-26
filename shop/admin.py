@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import Category, Plat, Commande, OrderItem, Profile
 from django.utils.safestring import mark_safe
 
-admin.site.site_header = "E-commerce"
-admin.site.site_title = "SBC-shop"
-admin.site.index_title = "Manageur"
+admin.site.site_header = "AfroLink"
+admin.site.site_title = "AfroLink"
+admin.site.index_title = "Administration"
 
 
 class AdminCategorie(admin.ModelAdmin):

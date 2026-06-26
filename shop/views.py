@@ -444,7 +444,11 @@ def ajouter_plat(request):
             plat.cuisinier = request.user
             plat.save()
             messages.success(request, f"Le plat « {plat.title} » a été ajouté !")
-            return redirect('home')
+            # On regarde quel bouton a été cliqué
+            if request.POST.get('action') == 'continuer':
+                return redirect('ajouter_plat')   # reste sur le formulaire
+            else:
+                return redirect('mes_plats')      # va voir ses plats
     else:
         form = PlatForm()
 
