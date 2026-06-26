@@ -1,0 +1,14 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Supprimer un plat</h2>
+  <p>Êtes-vous sûr de vouloir supprimer le plat « <strong>{{ plat.title }}</strong> » ? Cette action est irréversible.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+    <a href="{% url 'mes_plats' %}" class="btn btn-secondary">Annuler</a>
+  </form>
+</div>
+{% endblock %}

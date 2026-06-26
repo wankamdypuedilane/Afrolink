@@ -421,6 +421,14 @@ def profil(request):
     commandes = Commande.objects.filter(user=request.user).prefetch_related('order_items__plat').order_by('-date_commande')
     return render(request, 'shop/mes_commandes.html', {'commandes': commandes})
 
+@login_required(login_url='/connexion/')
+def espace_cuisinier(request):
+    # Barrière 2 : cuisinier ?
+    if request.user.profile.role != 'cuisinier':
+        messages.error(request, "Cet espace est réservé aux cuisiniers.")
+        return redirect('home')
+
+    return render(request, 'shop/espace_cuisinier.html')
 
 @login_required(login_url='/connexion/')
 def ajouter_plat(request):
@@ -441,3 +449,55 @@ def ajouter_plat(request):
         form = PlatForm()
 
     return render(request, 'shop/ajouter_plat.html', {'form': form})
+
+@login_required(login_url='/connexion/')
+def mes_plats(request):
+    # Barrière 2 : est-ce un cuisinier ?
+    if request.user.profile.role != 'cuisinier':
+        messages.error(request, "Seuls les cuisiniers ont un espace plats.")
+        return redirect('home')
+
+    # Filtrage : uniquement les plats de CE cuisinier
+    plats = Plat.objects.filter(cuisinier=request.user)
+
+    return render(request, 'shop/mes_plats.html', {'plats': plats})
+
+@login_required(login_url='/connexion/')
+def modifier_plat(request, myid):
+    # Barrière 2 : cuisinier ?
+    if request.user.profile.role != 'cuisinier':
+        messages.error(request, "Seuls les cuisiniers peuvent modifier un plat.")
+        return redirect('home')
+
+    # Sécurité : récupère le plat SEULEMENT s'il appartient au cuisinier connecté
+    plat = get_object_or_404(Plat, id=myid, cuisinier=request.user)
+
+    if request.method == 'POST':
+        form = PlatForm(request.POST, request.FILES, instance=plat)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Le plat « {plat.title} » a été modifié !")
+            return redirect('mes_plats')
+    else:
+        form = PlatForm(instance=plat)
+
+    return render(request, 'shop/modifier_plat.html', {'form': form, 'plat': plat})
+
+@login_required(login_url='/connexion/')
+def supprimer_plat(request, myid):
+    # Barrière 2 : cuisinier ?
+    if request.user.profile.role != 'cuisinier':
+        messages.error(request, "Seuls les cuisiniers peuvent supprimer un plat.")
+        return redirect('home')
+
+    # Même sécurité que modifier : le plat doit appartenir au cuisinier connecté
+    plat = get_object_or_404(Plat, id=myid, cuisinier=request.user)
+
+    if request.method == 'POST':
+        titre = plat.title
+        plat.delete()
+        messages.success(request, f"Le plat « {titre} » a été supprimé.")
+        return redirect('mes_plats')
+
+    # En GET : on affiche une page de confirmation
+    return render(request, 'shop/supprimer_plat.html', {'plat': plat})

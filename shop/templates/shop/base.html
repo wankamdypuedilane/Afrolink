@@ -132,7 +132,7 @@
                   {% endif %}
                   {% if request.user.is_authenticated and request.user.profile.role == 'cuisinier' %}
                   <li class="nav-item">
-                    <a class="nav-link text-success" href="{% url 'ajouter_plat' %}">Ajouter un plat</a>
+                    <a class="nav-link text-success" href="{% url 'espace_cuisinier' %}">Espace cuisinier</a>
                   </li>
                   {% endif %}
                   {% if not request.user.is_authenticated %}

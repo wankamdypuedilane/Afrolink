@@ -13,6 +13,10 @@ from shop.views import (
     deconnexion,
     profil,
     ajouter_plat,
+    mes_plats,
+    modifier_plat,
+    supprimer_plat,
+    espace_cuisinier,
     search_products,
 )
 
@@ -55,4 +59,8 @@ urlpatterns = [
     path('deconnexion/', deconnexion, name='deconnexion'),
     path('profil/', profil, name='profil'),
     path('ajouter-plat/', ajouter_plat, name='ajouter_plat'),
+    path('mes-plats/', mes_plats, name='mes_plats'),
+    path('modifier-plat/<int:myid>/', modifier_plat, name='modifier_plat'),
+    path('supprimer-plat/<int:myid>/', supprimer_plat, name='supprimer_plat'),
+    path('espace-cuisinier/', espace_cuisinier, name='espace_cuisinier'),
 ]
