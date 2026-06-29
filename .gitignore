@@ -5,3 +5,6 @@ terraform.tfstate
 terraform.tfstate.*
 *.tfplan
 infra/terraform/tfplan
+db.sqlite3
+media/
+*.log
