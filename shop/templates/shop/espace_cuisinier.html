@@ -5,6 +5,17 @@
   <h2>Espace cuisinier</h2>
   <p class="text-muted">Bienvenue {{ request.user.username }} ! Gérez vos plats depuis cet espace.</p>
 
+  {% if request.user.profile.siret_verifie %}
+  <div class="alert alert-success">
+    ✅ <strong>Compte vérifié.</strong> Vous pouvez publier vos plats et recevoir des commandes.
+  </div>
+  {% else %}
+  <div class="alert alert-warning">
+    ⚠️ <strong>Compte non vérifié.</strong> Vous devez vérifier votre SIRET avant de pouvoir publier des plats.
+    <a href="{% url 'mon_compte' %}" class="alert-link">Vérifier mon SIRET</a>
+  </div>
+  {% endif %}
+
   <div class="row mt-4">
     <div class="col-md-4 mb-3">
       <div class="card h-100">

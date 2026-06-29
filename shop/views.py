@@ -582,6 +582,11 @@ def ajouter_plat(request):
         messages.error(request, "Seuls les cuisiniers peuvent ajouter un plat.")
         return redirect('home')
 
+    # Barrière 3 : gating — il faut un SIRET vérifié pour publier
+    if not request.user.profile.siret_verifie:
+        messages.warning(request, "Pour publier vos plats, vous devez d'abord vérifier votre SIRET dans « Mon compte ».")
+        return redirect('mon_compte')
+
     if request.method == 'POST':
         form = PlatForm(request.POST, request.FILES)
         if form.is_valid():
