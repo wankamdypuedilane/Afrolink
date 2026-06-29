@@ -45,7 +45,7 @@ class Profile(models.Model):
     role      = models.CharField(max_length=20, choices=ROLE_CHOICES, default='client')
     ville     = models.CharField(max_length=100, blank=True, default='')
     telephone = models.CharField(max_length=20, blank=True, default='')
-    siret         = models.CharField(max_length=14, blank=True, default='')   # ← présent ou pas ?
+    siret         = models.CharField(max_length=14, blank=True, null=True, unique=True)  # ← présent ou pas ?
     siret_verifie = models.BooleanField(default=False)
     
     def __str__(self):

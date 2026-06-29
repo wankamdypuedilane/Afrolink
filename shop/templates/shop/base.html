@@ -127,6 +127,9 @@
                   {% endif %}
                   {% if request.user.is_authenticated %}
                   <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mon_compte' %}">Mon compte</a>
+                  </li>
+                  <li class="nav-item">
                     <a class="nav-link" href="{% url 'profil' %}">Mes commandes</a>
                   </li>
                   <li class="nav-item">

@@ -64,6 +64,7 @@
       {% endif %}
       <div class="card-body">
         <div id="a{{product.id}}" class="card-title">{{ product.title }}</div>
+        <p class="text-muted small mb-1">Par {{ product.cuisinier.username }}</p>
         <div class="mb-2">
           {% if product.stock == 0 %}
           <span class="badge bg-danger">Épuisé</span>

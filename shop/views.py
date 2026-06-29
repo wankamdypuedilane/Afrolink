@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth import login, logout
-from .forms import SignupForm, EmailAuthenticationForm, PlatForm, AvisForm
+from .forms import SignupForm, EmailAuthenticationForm, PlatForm, AvisForm, ProfileForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
@@ -42,7 +42,7 @@ def render_checkout_error(request, error_message):
 
 
 def index(request):
-    plats = Plat.objects.select_related('category').all()
+    plats = Plat.objects.select_related('category', 'cuisinier').all()
     categories = Category.objects.all()
 
     item_name = request.GET.get('item-name', '').strip()
@@ -95,7 +95,7 @@ def search_products(request):
 
 
 def detail(request, myid):
-    plat = get_object_or_404(Plat, id=myid)
+    plat = get_object_or_404(Plat.objects.select_related('cuisinier'), id=myid)
     avis = plat.avis.all()                          # tous les avis de ce plat (grâce au related_name)
     stats = avis.aggregate(moyenne=Avg('note'))     # calcule la moyenne des notes
     note_moyenne = stats['moyenne']                 # None s'il n'y a aucun avis
@@ -412,6 +412,11 @@ def inscription(request):
                     messages.error(request, "Le SIRET doit comporter 14 chiffres.")
                     return render(request, 'shop/inscription.html', {'form': form})
 
+                # Anti-doublon (PAS de .exclude ici : l'utilisateur n'existe pas encore)
+                if Profile.objects.filter(siret=siret).exists():
+                    messages.error(request, "Ce SIRET est déjà associé à un autre compte.")
+                    return render(request, 'shop/inscription.html', {'form': form})
+
                 # Format OK : on enregistre le SIRET, vérifié ou non
                 siret_a_enregistrer = siret
                 siret_verifie = resultat['valide']
@@ -464,6 +469,102 @@ def deconnexion(request):
 def profil(request):
     commandes = Commande.objects.filter(user=request.user).prefetch_related('order_items__plat').order_by('-date_commande')
     return render(request, 'shop/mes_commandes.html', {'commandes': commandes})
+
+
+@login_required(login_url='/connexion/')
+def mon_compte(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Vos informations ont été mises à jour.")
+            return redirect('mon_compte')
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'shop/mon_compte.html', {'profile': profile, 'form': form})
+
+
+@login_required(login_url='/connexion/')
+def mettre_a_jour_siret(request):
+    profile = request.user.profile
+
+    if profile.role != 'cuisinier':
+        messages.error(request, "Réservé aux cuisiniers.")
+        return redirect('mon_compte')
+
+    if request.method == 'POST':
+        siret = request.POST.get('siret', '').strip()
+
+        # Réaffiche la page (sans redirect) avec l'erreur sous le champ.
+        # On passe aussi `form` pour ne pas vider la carte « Modifier mes informations ».
+        def reafficher_avec_erreur(erreur):
+            return render(request, 'shop/mon_compte.html', {
+                'profile': profile,
+                'form': ProfileForm(instance=profile),
+                'siret_erreur': erreur,
+            })
+
+        if not siret:
+            return reafficher_avec_erreur("Veuillez saisir un SIRET.")
+
+        resultat = verifier_siret(siret)
+        if resultat['raison'] == 'format':
+            return reafficher_avec_erreur("Le SIRET doit comporter 14 chiffres.")
+
+        if Profile.objects.filter(siret=siret).exclude(user=request.user).exists():
+            return reafficher_avec_erreur("Ce SIRET est déjà associé à un autre compte.")
+
+        profile.siret = siret
+        profile.siret_verifie = resultat['valide']
+        profile.save()
+
+        if resultat['valide']:
+            messages.success(request, f"SIRET vérifié : {resultat['nom']}")
+        else:
+            messages.warning(request, "SIRET enregistré mais non vérifié (introuvable ou service indisponible).")
+
+        return redirect('mon_compte')
+
+    return redirect('mon_compte')
+
+
+@login_required(login_url='/connexion/')
+def devenir_cuisinier(request):
+    profile = request.user.profile
+
+    # Sécurité : on ne traite que le POST, et seulement pour un client
+    if profile.role != 'client':
+        messages.info(request, "Vous êtes déjà cuisinier.")
+        return redirect('mon_compte')
+
+    if request.method == 'POST':
+        siret = request.POST.get('siret', '').strip()
+
+        if siret:
+            resultat = verifier_siret(siret)
+            if resultat['raison'] == 'format':
+                messages.error(request, "Le SIRET doit comporter 14 chiffres.")
+                return redirect('mon_compte')
+
+            if Profile.objects.filter(siret=siret).exclude(user=request.user).exists():
+                messages.error(request, "Ce SIRET est déjà associé à un autre compte.")
+                return redirect('mon_compte')
+
+            profile.siret = siret
+            profile.siret_verifie = resultat['valide']
+            if resultat['valide']:
+                messages.success(request, f"SIRET vérifié : {resultat['nom']}")
+            else:
+                messages.warning(request, "SIRET enregistré mais non vérifié.")
+
+        # On bascule le rôle
+        profile.role = 'cuisinier'
+        profile.save()
+        messages.success(request, "Félicitations ! Vous êtes maintenant cuisinier sur AfroLink.")
+        return redirect('espace_cuisinier')
+
+    return redirect('mon_compte')
 
 @login_required(login_url='/connexion/')
 def espace_cuisinier(request):

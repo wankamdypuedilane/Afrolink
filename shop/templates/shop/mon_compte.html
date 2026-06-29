@@ -1,0 +1,110 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h2>Mon compte</h2>
+
+      <div class="card shadow-sm mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Informations</h5>
+          <p class="mb-1"><strong>Nom d'utilisateur :</strong> {{ request.user.username }}</p>
+          <p class="mb-1"><strong>Email :</strong> {{ request.user.email }}</p>
+          <p class="mb-1"><strong>Rôle :</strong>
+            {% if profile.role == 'cuisinier' %}
+            <span class="badge bg-success">Cuisinier</span>
+            {% else %}
+            <span class="badge bg-secondary">Client</span>
+            {% endif %}
+          </p>
+          <p class="mb-1"><strong>Ville :</strong> {{ profile.ville|default:"Non renseignée" }}</p>
+          <p class="mb-1"><strong>Téléphone :</strong> {{ profile.telephone|default:"Non renseigné" }}</p>
+
+          {% if profile.role == 'cuisinier' %}
+          <hr>
+          <h6>Statut professionnel</h6>
+          {% if profile.siret and profile.siret_verifie %}
+          <p class="mb-1"><strong>SIRET :</strong> {{ profile.siret }}
+            <span class="badge bg-success">Vérifié</span>
+          </p>
+          {% else %}
+          <p class="text-muted">
+            {% if profile.siret %}
+            SIRET « {{ profile.siret }} » enregistré mais <span class="text-warning">non vérifié</span>.
+            {% else %}
+            Aucun SIRET renseigné.
+            {% endif %}
+            <a href="{% url 'devenir_auto_entrepreneur' %}">Comment en obtenir un ?</a>
+          </p>
+          <form method="post" action="{% url 'mettre_a_jour_siret' %}" class="mt-2">
+            {% csrf_token %}
+            <div class="input-group">
+              <input type="text" name="siret" class="form-control" maxlength="14" placeholder="Saisissez votre SIRET (14 chiffres)" value="{{ profile.siret|default_if_none:'' }}" />
+              <button type="submit" class="btn btn-success">Vérifier et enregistrer</button>
+            </div>
+            {% if siret_erreur %}
+            <div id="siret-erreur" class="text-danger small mt-1">{{ siret_erreur }}</div>
+            {% endif %}
+          </form>
+          {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card shadow-sm mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Modifier mes informations</h5>
+          <form method="post" action="{% url 'mon_compte' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="{{ form.ville.id_for_label }}" class="form-label">{{ form.ville.label }}</label>
+              {{ form.ville }}
+            </div>
+            <div class="mb-3">
+              <label for="{{ form.telephone.id_for_label }}" class="form-label">{{ form.telephone.label }}</label>
+              {{ form.telephone }}
+            </div>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+
+      {% if profile.role == 'client' %}
+      <div class="card shadow-sm mt-3 border-success">
+        <div class="card-body">
+          <h5 class="card-title">Devenir cuisinier</h5>
+          <p class="text-muted">
+            Vous souhaitez vendre vos plats sur AfroLink ? Renseignez votre SIRET pour devenir cuisinier.
+            <a href="{% url 'devenir_auto_entrepreneur' %}">Pas encore de SIRET ?</a>
+          </p>
+          <form method="post" action="{% url 'devenir_cuisinier' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Numéro SIRET <span class="text-muted">(facultatif)</span></label>
+              <input type="text" name="siret" class="form-control" maxlength="14" placeholder="14 chiffres — laissez vide si vous n'en avez pas encore" />
+            </div>
+            <button type="submit" class="btn btn-success">Devenir cuisinier</button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  // Fait disparaître le message d'erreur SIRET en fondu après 5 secondes
+  (function () {
+    var err = document.getElementById("siret-erreur");
+    if (!err) return;
+    setTimeout(function () {
+      err.style.transition = "opacity 0.5s";
+      err.style.opacity = "0";
+      setTimeout(function () { err.remove(); }, 500);
+    }, 5000);
+  })();
+</script>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Plat, Category, Avis
+from .models import Plat, Category, Avis, Profile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
@@ -87,4 +87,18 @@ class AvisForm(forms.ModelForm):
         widgets = {
             'note': forms.Select(attrs={'class': 'form-select'}),
             'commentaire': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['ville', 'telephone']
+        labels = {
+            'ville': 'Ville',
+            'telephone': 'Téléphone',
+        }
+        widgets = {
+            'ville': forms.TextInput(attrs={'class': 'form-control'}),
+            'telephone': forms.TextInput(attrs={'class': 'form-control'}),
         }
