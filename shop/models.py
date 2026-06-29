@@ -40,6 +40,7 @@ class Profile(models.Model):
     ROLE_CHOICES = [
         ('client',    'Client'),
         ('cuisinier', 'Cuisinier'),
+        ('livreur',   'Livreur'),
     ]
     user      = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     role      = models.CharField(max_length=20, choices=ROLE_CHOICES, default='client')
@@ -50,6 +51,23 @@ class Profile(models.Model):
     
     def __str__(self):
         return f"{self.user.username} ({self.role})"
+
+
+class Livreur(models.Model):
+    TRANSPORT_CHOICES = [
+        ('velo',    'Vélo'),
+        ('scooter', 'Scooter'),
+        ('voiture', 'Voiture'),
+        ('pieds',   'À pied'),
+    ]
+    user        = models.OneToOneField(User, on_delete=models.CASCADE, related_name='livreur')
+    transport   = models.CharField(max_length=20, choices=TRANSPORT_CHOICES, default='velo')
+    zone        = models.CharField(max_length=100, blank=True, default='')
+    disponible  = models.BooleanField(default=False)
+    date_ajout  = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} ({self.get_transport_display()})"
 
 class Commande(models.Model):
 

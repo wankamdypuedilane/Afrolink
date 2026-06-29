@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Plat, Commande, OrderItem, Profile, Avis 
+from .models import Category, Plat, Commande, OrderItem, Profile, Avis, Livreur
 from django.utils.safestring import mark_safe
 
 
@@ -59,3 +59,9 @@ admin.site.register(Avis)
 class AdminOrderItem(admin.ModelAdmin):
     list_display = ('commande', 'plat', 'price', 'quantity')
     list_select_related = ('commande', 'plat')
+
+
+@admin.register(Livreur)
+class LivreurAdmin(admin.ModelAdmin):
+    list_display = ('user', 'transport', 'zone', 'disponible', 'date_ajout')
+    list_filter = ('transport', 'disponible')

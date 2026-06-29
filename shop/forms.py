@@ -20,6 +20,7 @@ class SignupForm(UserCreationForm):
     ROLE_CHOICES = [
         ('client', 'Je veux commander des plats'),
         ('cuisinier', 'Je veux vendre mes plats'),
+        ('livreur', 'Je veux livrer des plats'),
     ]
     role = forms.ChoiceField(
         choices=ROLE_CHOICES,

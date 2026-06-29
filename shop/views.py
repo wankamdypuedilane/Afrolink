@@ -11,7 +11,7 @@ from .forms import SignupForm, EmailAuthenticationForm, PlatForm, AvisForm, Prof
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from .models import Plat, Category, Commande, OrderItem, Profile, Avis
+from .models import Plat, Category, Commande, OrderItem, Profile, Avis, Livreur
 from django.db.models import Avg
 from .services import (
     sync_commande_payment_from_stripe,
@@ -434,6 +434,18 @@ def inscription(request):
                 siret=siret_a_enregistrer,
                 siret_verifie=siret_verifie,
             )
+
+            # Si le rôle est livreur, créer aussi l'objet Livreur
+            if role == 'livreur':
+                transport = request.POST.get('transport', 'velo')
+                zone = request.POST.get('zone', '').strip()
+                Livreur.objects.create(
+                    user=user,
+                    transport=transport,
+                    zone=zone,
+                    disponible=False,
+                )
+
             login(request, user)
             messages.success(request, f"Bienvenue {user.username}, votre compte a été créé !")
             return redirect('home')
@@ -524,6 +536,36 @@ def mettre_a_jour_siret(request):
         else:
             messages.warning(request, "SIRET enregistré mais non vérifié (introuvable ou service indisponible).")
 
+        return redirect('mon_compte')
+
+    return redirect('mon_compte')
+
+
+@login_required(login_url='/connexion/')
+def devenir_livreur(request):
+    profile = request.user.profile
+
+    if profile.role == 'livreur':
+        messages.info(request, "Vous êtes déjà livreur.")
+        return redirect('mon_compte')
+
+    if request.method == 'POST':
+        transport = request.POST.get('transport', 'velo')
+        zone = request.POST.get('zone', '').strip()
+
+        # Créer l'objet Livreur
+        Livreur.objects.create(
+            user=request.user,
+            transport=transport,
+            zone=zone,
+            disponible=False,
+        )
+
+        # Basculer le rôle
+        profile.role = 'livreur'
+        profile.save()
+
+        messages.success(request, "Félicitations ! Vous êtes maintenant livreur sur AfroLink.")
         return redirect('mon_compte')
 
     return redirect('mon_compte')

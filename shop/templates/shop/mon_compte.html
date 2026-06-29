@@ -89,6 +89,34 @@
         </div>
       </div>
       {% endif %}
+
+      {% if profile.role != 'livreur' %}
+      <div class="card shadow-sm mt-3 border-info">
+        <div class="card-body">
+          <h5 class="card-title">Devenir livreur</h5>
+          <p class="text-muted">
+            Vous souhaitez livrer des plats sur AfroLink ? Renseignez vos informations.
+          </p>
+          <form method="post" action="{% url 'devenir_livreur' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Moyen de transport</label>
+              <select name="transport" class="form-select">
+                <option value="velo">Vélo</option>
+                <option value="scooter">Scooter</option>
+                <option value="voiture">Voiture</option>
+                <option value="pieds">À pied</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Zone de livraison</label>
+              <input type="text" name="zone" class="form-control" placeholder="Ex : Brest centre, Bellevue..." />
+            </div>
+            <button type="submit" class="btn btn-info">Devenir livreur</button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>

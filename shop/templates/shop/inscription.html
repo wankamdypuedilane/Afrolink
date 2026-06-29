@@ -48,6 +48,18 @@
                 Je veux vendre mes plats (cuisinier)
               </label>
             </div>
+            <div class="form-check">
+              <input
+                type="radio"
+                name="role"
+                value="livreur"
+                id="role-livreur"
+                class="form-check-input"
+              />
+              <label class="form-check-label" for="role-livreur">
+                Je veux livrer des plats (livreur)
+              </label>
+            </div>
           </div>
 
           <div class="mb-3" id="siret-field" style="display: none;">
@@ -66,6 +78,18 @@
               Il sera nécessaire pour vendre vos plats en toute légalité.
               <a href="{% url 'devenir_auto_entrepreneur' %}">Pas encore de SIRET ? Voici comment en obtenir un (gratuit)</a>.
             </small>
+          </div>
+
+          <div class="mb-3" id="livreur-fields" style="display: none;">
+            <label class="form-label fw-bold">Moyen de transport</label>
+            <select name="transport" class="form-select mb-2">
+              <option value="velo">Vélo</option>
+              <option value="scooter">Scooter</option>
+              <option value="voiture">Voiture</option>
+              <option value="pieds">À pied</option>
+            </select>
+            <label class="form-label fw-bold">Zone de livraison</label>
+            <input type="text" name="zone" class="form-control" placeholder="Ex : Brest centre, Bellevue..." />
           </div>
 
           <div class="mb-3">
@@ -168,21 +192,20 @@
   (function () {
     const radios = document.querySelectorAll('input[name="role"]');
     const siretField = document.getElementById("siret-field");
+    const livreurFields = document.getElementById("livreur-fields");
 
-    function toggleSiret() {
-      const roleSelectionne = document.querySelector('input[name="role"]:checked');
-      if (roleSelectionne && roleSelectionne.value === "cuisinier") {
-        siretField.style.display = "block";
-      } else {
-        siretField.style.display = "none";
-      }
+    function toggleRoleFields() {
+      const role = document.querySelector('input[name="role"]:checked');
+      const value = role ? role.value : "client";
+      siretField.style.display = value === "cuisinier" ? "block" : "none";
+      livreurFields.style.display = value === "livreur" ? "block" : "none";
     }
 
     radios.forEach(function (radio) {
-      radio.addEventListener("change", toggleSiret);
+      radio.addEventListener("change", toggleRoleFields);
     });
 
-    toggleSiret(); // au chargement, applique l'état initial
+    toggleRoleFields(); // au chargement, applique l'état initial
   })();
 </script>
 {% endblock %}
