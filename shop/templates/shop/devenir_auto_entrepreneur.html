@@ -1,0 +1,47 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-9">
+      <h2>Devenir auto-entrepreneur pour vendre sur AfroLink</h2>
+      <p class="lead">
+        Pour vendre vos plats en toute légalité, vous avez besoin d'un statut d'auto-entrepreneur
+        (micro-entreprise) et d'un numéro SIRET. Bonne nouvelle : c'est <strong>gratuit</strong> et ça se fait en ligne.
+      </p>
+
+      <div class="alert alert-warning">
+        ⚠️ <strong>Attention :</strong> la création d'une micro-entreprise est <strong>100 % gratuite</strong>
+        sur le site officiel. Méfiez-vous des sites qui vous demandent de payer pour cette démarche : ce sont des intermédiaires, pas le service officiel.
+      </div>
+
+      <h4 class="mt-4">Les étapes</h4>
+      <ol>
+        <li class="mb-2">
+          Rendez-vous sur le <strong>guichet unique officiel</strong> :
+          <a href="https://formalites.entreprises.gouv.fr" target="_blank" rel="noopener">formalites.entreprises.gouv.fr</a>
+          (opéré par l'INPI, c'est le seul site officiel depuis 2023).
+        </li>
+        <li class="mb-2">Créez un compte (ou connectez-vous via FranceConnect).</li>
+        <li class="mb-2">Choisissez « Entrepreneur individuel » puis le régime « micro-entrepreneur ».</li>
+        <li class="mb-2">Renseignez votre activité (vente de plats / restauration), votre adresse et vos informations.</li>
+        <li class="mb-2">Préparez : votre numéro de Sécurité sociale, une pièce d'identité, et une déclaration de non-condamnation.</li>
+      </ol>
+
+      <p>
+        Après validation, l'INSEE vous attribue votre <strong>numéro SIRET</strong> (14 chiffres),
+        généralement sous <strong>15 jours</strong>. Vous pourrez alors le renseigner sur AfroLink pour devenir cuisinier vérifié.
+      </p>
+
+      <h4 class="mt-4">Ressources utiles</h4>
+      <ul>
+        <li><a href="https://formalites.entreprises.gouv.fr" target="_blank" rel="noopener">Guichet unique INPI (création — gratuit)</a></li>
+        <li><a href="https://www.autoentrepreneur.urssaf.fr" target="_blank" rel="noopener">URSSAF auto-entrepreneur (déclarations de chiffre d'affaires)</a></li>
+        <li><a href="https://www.economie.gouv.fr/particuliers/vie-en-entreprise/comment-devenir-micro-entrepreneur-auto-entrepreneur" target="_blank" rel="noopener">Guide officiel economie.gouv.fr</a></li>
+      </ul>
+
+      <a href="{% url 'inscription' %}" class="btn btn-success mt-3">Retour à l'inscription</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

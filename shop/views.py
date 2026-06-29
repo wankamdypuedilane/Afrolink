@@ -7,11 +7,12 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth import login, logout
-from .forms import SignupForm, EmailAuthenticationForm, PlatForm
+from .forms import SignupForm, EmailAuthenticationForm, PlatForm, AvisForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from .models import Plat, Category, Commande, OrderItem, Profile
+from .models import Plat, Category, Commande, OrderItem, Profile, Avis
+from django.db.models import Avg
 from .services import (
     sync_commande_payment_from_stripe,
     stripe_is_configured,
@@ -19,6 +20,7 @@ from .services import (
     calculate_tax_totals,
     get_tax_rate_percent,
     send_order_confirmation_email,
+    verifier_siret,
 )
 
 try:
@@ -93,8 +95,16 @@ def search_products(request):
 
 
 def detail(request, myid):
-    plat = Plat.objects.get(id=myid)
-    return render(request, 'shop/detail.html', {'product': plat})
+    plat = get_object_or_404(Plat, id=myid)
+    avis = plat.avis.all()                          # tous les avis de ce plat (grâce au related_name)
+    stats = avis.aggregate(moyenne=Avg('note'))     # calcule la moyenne des notes
+    note_moyenne = stats['moyenne']                 # None s'il n'y a aucun avis
+    return render(request, 'shop/detail.html', {
+        'product': plat,
+        'avis': avis,
+        'note_moyenne': note_moyenne,
+        'nombre_avis': avis.count(),
+    })
 
 @login_required(login_url='/connexion/')
 def checkout(request):
@@ -387,15 +397,48 @@ def inscription(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
+            role = form.cleaned_data['role']
+            siret = form.cleaned_data.get('siret', '').strip()
+
+            # Préparation des valeurs SIRET selon le rôle
+            siret_a_enregistrer = ''
+            siret_verifie = False
+
+            if role == 'cuisinier' and siret:
+                resultat = verifier_siret(siret)
+
+                if resultat['raison'] == 'format':
+                    # Format invalide = erreur de saisie évidente → on bloque
+                    messages.error(request, "Le SIRET doit comporter 14 chiffres.")
+                    return render(request, 'shop/inscription.html', {'form': form})
+
+                # Format OK : on enregistre le SIRET, vérifié ou non
+                siret_a_enregistrer = siret
+                siret_verifie = resultat['valide']
+
+                if resultat['valide']:
+                    messages.success(request, f"SIRET vérifié : {resultat['nom']}")
+                else:
+                    messages.warning(request, "SIRET enregistré mais non vérifié (introuvable ou service indisponible). Vous pourrez le confirmer plus tard.")
+
+            # Création du compte
             user = form.save()
-            role = form.cleaned_data['role']                    # on récupère le choix
-            Profile.objects.create(user=user, role=role)        # on crée le profil avec ce rôle
+            Profile.objects.create(
+                user=user,
+                role=role,
+                siret=siret_a_enregistrer,
+                siret_verifie=siret_verifie,
+            )
             login(request, user)
             messages.success(request, f"Bienvenue {user.username}, votre compte a été créé !")
             return redirect('home')
     else:
         form = SignupForm()
     return render(request, 'shop/inscription.html', {'form': form})
+
+
+def devenir_auto_entrepreneur(request):
+    return render(request, 'shop/devenir_auto_entrepreneur.html')
 
 
 def connexion(request):
@@ -521,3 +564,31 @@ def commandes_recues(request):
     ).select_related('plat', 'commande').order_by('-commande__date_commande')
 
     return render(request, 'shop/commandes_recues.html', {'lignes': lignes})
+
+@login_required(login_url='/connexion/')
+def ajouter_avis(request, myid):
+    plat = get_object_or_404(Plat, id=myid)
+
+    # Règle 1 : le cuisinier ne peut pas noter son propre plat
+    if plat.cuisinier == request.user:
+        messages.error(request, "Vous ne pouvez pas noter votre propre plat.")
+        return redirect('detail', myid=plat.id)
+
+    # Règle 2 : un seul avis par plat et par utilisateur
+    if Avis.objects.filter(plat=plat, user=request.user).exists():
+        messages.error(request, "Vous avez déjà laissé un avis sur ce plat.")
+        return redirect('detail', myid=plat.id)
+
+    if request.method == 'POST':
+        form = AvisForm(request.POST)
+        if form.is_valid():
+            avis = form.save(commit=False)
+            avis.plat = plat
+            avis.user = request.user
+            avis.save()
+            messages.success(request, "Merci pour votre avis !")
+            return redirect('detail', myid=plat.id)
+    else:
+        form = AvisForm()
+
+    return render(request, 'shop/ajouter_avis.html', {'form': form, 'plat': plat})

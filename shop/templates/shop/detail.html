@@ -58,4 +58,37 @@
   </div>
 </div>
 
+<div class="container mt-5">
+  <h3>Avis des clients</h3>
+
+  {% if note_moyenne %}
+  <p class="fs-5">
+    <span class="text-warning">★</span>
+    <strong>{{ note_moyenne|floatformat:1 }}/5</strong>
+    <span class="text-muted">({{ nombre_avis }} avis)</span>
+  </p>
+  {% else %}
+  <p class="text-muted">Aucun avis pour ce plat pour le moment.</p>
+  {% endif %}
+
+  {% if request.user.is_authenticated and request.user != product.cuisinier %}
+  <a href="{% url 'ajouter_avis' product.id %}" class="btn btn-outline-success mb-3">Laisser un avis</a>
+  {% endif %}
+
+  {% for a in avis %}
+  <div class="card mb-2">
+    <div class="card-body">
+      <div class="d-flex justify-content-between">
+        <strong>{{ a.user.username }}</strong>
+        <span class="text-warning">
+          {% for i in "12345" %}{% if forloop.counter <= a.note %}★{% else %}☆{% endif %}{% endfor %}
+        </span>
+      </div>
+      {% if a.commentaire %}<p class="mb-1 mt-2">{{ a.commentaire }}</p>{% endif %}
+      <small class="text-muted">{{ a.date_ajout|date:"d/m/Y" }}</small>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
 {% endblock content %}

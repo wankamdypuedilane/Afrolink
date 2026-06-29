@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Category, Plat, Commande, OrderItem, Profile
+from .models import Category, Plat, Commande, OrderItem, Profile, Avis 
 from django.utils.safestring import mark_safe
+
 
 admin.site.site_header = "AfroLink"
 admin.site.site_title = "AfroLink"
@@ -51,6 +52,7 @@ admin.site.register(Plat, AdminPlat)
 admin.site.register(Category, AdminCategorie)
 admin.site.register(Commande, AdminCommande)
 admin.site.register(Profile)
+admin.site.register(Avis)
 
 
 @admin.register(OrderItem)

@@ -45,7 +45,9 @@ class Profile(models.Model):
     role      = models.CharField(max_length=20, choices=ROLE_CHOICES, default='client')
     ville     = models.CharField(max_length=100, blank=True, default='')
     telephone = models.CharField(max_length=20, blank=True, default='')
-
+    siret         = models.CharField(max_length=14, blank=True, default='')   # ← présent ou pas ?
+    siret_verifie = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"{self.user.username} ({self.role})"
 
@@ -102,3 +104,27 @@ class OrderItem(models.Model):
     def __str__(self):
         product_name = self.plat.title if self.plat else 'Produit supprimé'
         return f"{product_name} x{self.quantity}"
+    
+
+class Avis(models.Model):
+    NOTE_CHOICES = [
+        (1, '⭐'),
+        (2, '⭐⭐'),
+        (3, '⭐⭐⭐'),
+        (4, '⭐⭐⭐⭐'),
+        (5, '⭐⭐⭐⭐⭐'),
+    ]
+    plat        = models.ForeignKey(Plat, related_name='avis', on_delete=models.CASCADE)
+    user        = models.ForeignKey(User, related_name='avis', on_delete=models.CASCADE)
+    note        = models.PositiveSmallIntegerField(choices=NOTE_CHOICES)
+    commentaire = models.TextField(blank=True)
+    date_ajout  = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_ajout']           # les avis les plus récents en premier
+        unique_together = ('plat', 'user')   # un user = un seul avis par plat
+        verbose_name = 'Avis'              # singulier
+        verbose_name_plural = 'Avis'    
+
+    def __str__(self):
+        return f"{self.user.username} — {self.plat.title} ({self.note}/5)"

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Plat, Category
+from .models import Plat, Category, Avis
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
@@ -26,6 +26,16 @@ class SignupForm(UserCreationForm):
         widget=forms.RadioSelect,
         initial='client',
         label="Vous êtes ?",
+    )
+
+    siret = forms.CharField(
+        required=False,
+        label="Numéro SIRET (pour les cuisiniers)",
+        max_length=14,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '14 chiffres',
+        }),
     )
 
     class Meta(UserCreationForm.Meta):
@@ -64,4 +74,17 @@ class PlatForm(forms.ModelForm):
             'category':    forms.Select(attrs={'class': 'form-select'}),
             'image_file':  forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'stock':       forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class AvisForm(forms.ModelForm):
+    class Meta:
+        model = Avis
+        fields = ['note', 'commentaire']
+        labels = {
+            'note': 'Votre note',
+            'commentaire': 'Votre commentaire (optionnel)',
+        }
+        widgets = {
+            'note': forms.Select(attrs={'class': 'form-select'}),
+            'commentaire': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }

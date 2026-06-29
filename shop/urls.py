@@ -9,6 +9,7 @@ from shop.views import (
     payment_cancel,
     stripe_webhook,
     inscription,
+    devenir_auto_entrepreneur,
     connexion,
     deconnexion,
     profil,
@@ -18,6 +19,7 @@ from shop.views import (
     supprimer_plat,
     espace_cuisinier,
     commandes_recues,
+    ajouter_avis,
     search_products,
 )
 
@@ -32,6 +34,7 @@ urlpatterns = [
     path('paiement/succes/', payment_success, name='payment_success'),
     path('paiement/annule/', payment_cancel, name='payment_cancel'),
     path('inscription/', inscription, name='inscription'),
+    path('devenir-auto-entrepreneur/', devenir_auto_entrepreneur, name='devenir_auto_entrepreneur'),
     path('connexion/', connexion, name='connexion'),
     path(
         'mot-de-passe-oublie/',
@@ -65,4 +68,5 @@ urlpatterns = [
     path('supprimer-plat/<int:myid>/', supprimer_plat, name='supprimer_plat'),
     path('espace-cuisinier/', espace_cuisinier, name='espace_cuisinier'),
     path('commandes-recues/', commandes_recues, name='commandes_recues'),
+    path('plat/<int:myid>/avis/', ajouter_avis, name='ajouter_avis'),
 ]

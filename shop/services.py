@@ -1,4 +1,5 @@
 import logging
+import requests
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.conf import settings
@@ -180,3 +181,31 @@ def sync_commande_payment_from_stripe(commande, session_id=None):
         commande.save(update_fields=['payment_status'])
 
     return commande.payment_status
+
+def verifier_siret(siret):
+    """
+    Vérifie un SIRET via l'API Recherche d'Entreprises (publique, sans clé).
+    Renvoie un dict : {'valide': bool, 'raison': str, 'nom': str}
+    """
+    # 1. Vérification du format AVANT d'appeler l'API (14 chiffres)
+    siret = siret.strip().replace(' ', '')
+    if not siret.isdigit() or len(siret) != 14:
+        return {'valide': False, 'raison': 'format', 'nom': ''}
+
+    # 2. Appel à l'API
+    url = "https://recherche-entreprises.api.gouv.fr/search"
+    try:
+        response = requests.get(url, params={'q': siret}, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+    except requests.RequestException:
+        return {'valide': False, 'raison': 'api_indisponible', 'nom': ''}
+
+    # 3. Analyse de la réponse
+    resultats = data.get('results', [])
+    if not resultats:
+        return {'valide': False, 'raison': 'introuvable', 'nom': ''}
+
+    entreprise = resultats[0]
+    nom = entreprise.get('nom_complet', '')
+    return {'valide': True, 'raison': 'ok', 'nom': nom}
